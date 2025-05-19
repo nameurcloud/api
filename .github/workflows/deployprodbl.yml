@@ -38,7 +38,7 @@ jobs:
       - name: 🚀 Deploy to Cloud Run
         run: |
           IMAGE=asia-east1-docker.pkg.dev/nameurcloud/production/nameurcloudapi:$GITHUB_SHA
-          gcloud run deploy backend \
+          gcloud run deploy api \
             --image=$IMAGE \
             --platform=managed \
             --region=asia-east1 \
