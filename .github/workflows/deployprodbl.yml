@@ -42,8 +42,4 @@ jobs:
             --image=$IMAGE \
             --platform=managed \
             --region=asia-east1 \
-            --port=8181 \
-            --set-env-vars "JWT_SECRET=${{ secrets.JWT_SECRET }},MONGO_URI=${{ secrets.MONGO_URI }},ENV=prod,BACKEND_URL=https://be.nameurcloud.com"
-        env:
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          MONGO_URI: ${{ secrets.MONGO_URI }}
+            --port=8080
