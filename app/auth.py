@@ -1,7 +1,16 @@
-def validate_key(key: str) -> bool:
-    # Replace with real DB/cache/API call
-    return key == "Bearer test-api-key"
+# app/auth.py
+import re
 
-def check_permission(key: str, path: str, method: str) -> bool:
-    # Implement logic per key/role/path/method
-    return True  # Allow all for now
+
+
+def is_valid_view_path(path: str) -> bool:
+    pattern = r"^name/([a-z0-9]+)/view$"
+    return re.match(pattern, path) is not None
+
+def is_valid_generate_path(path: str) -> bool:
+    pattern = r"^name/([a-z0-9]+)/generate$"
+    return re.match(pattern, path) is not None
+
+def is_valid_delete_path(path: str) -> bool:
+    pattern = r"^name/([a-z0-9]+)/delete$"
+    return re.match(pattern, path) is not None
