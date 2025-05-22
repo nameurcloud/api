@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 import httpx
 from app.auth import is_valid_delete_path, is_valid_generate_path, is_valid_view_path
 from app.config import BACKEND_URL, IS_DEV
-import google.auth
 from google.auth.transport.requests import Request as GoogleRequest
 from google.auth import default
 from google.oauth2 import id_token
