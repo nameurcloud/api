@@ -42,4 +42,8 @@ jobs:
             --image=$IMAGE \
             --platform=managed \
             --region=asia-east1 \
-            --port=8080
+            --port=8080 \
+            --set-env-vars "BACKEND_URL=${{ secrets.BACKEND_URL }}"
+        env:
+           BACKEND_URL: ${{ secrets.BACKEND_URL }}
+            
