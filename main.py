@@ -3,6 +3,7 @@ import json
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 import httpx
+from fastapi.middleware.cors import CORSMiddleware
 from app.auth import is_valid_delete_path, is_valid_generate_path, is_valid_view_path
 from app.config import BACKEND_URL, IS_DEV
 from google.auth.transport.requests import Request as GoogleRequest
@@ -10,6 +11,16 @@ from google.auth import default
 from google.oauth2 import id_token
 
 app = FastAPI()
+
+# CORS setup
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins="*",  # for testing
+    allow_credentials=True,
+    allow_methods=["GET", "POST"],  # Allow POST and OPTIONS
+    allow_headers=["Authorization", "Content-Type"],  # Allow these headers
+)
+
 
 async def get_id_token(audience: str) -> str:
     # Only needed in production
