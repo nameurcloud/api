@@ -102,6 +102,7 @@ async def proxy(full_path: str, request: Request):
     # ----------------
     # Inject ID Token
     # ----------------
+    
     if not IS_DEV:
         try:
             token = await get_id_token(BACKEND_URL)
