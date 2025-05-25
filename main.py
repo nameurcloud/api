@@ -106,7 +106,7 @@ async def proxy(full_path: str, request: Request):
         try:
             token = await get_id_token(BACKEND_URL)
             headers["Authorization"] = f"Bearer {token}"
-            logger.info("ID token added to request headers.")
+            logger.info(f"ID token injected. Token starts with: {token[:10]}...")
         except Exception as e:
             logger.exception("Failed to generate or inject ID token.")
             raise HTTPException(status_code=500, detail=f"ID token injection failed: {str(e)}")
