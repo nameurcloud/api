@@ -92,7 +92,7 @@ async def proxy(full_path: str, request: Request):
             logger.exception("Error generating ID token")
             raise HTTPException(status_code=500, detail=f"Failed to get ID token: {str(e)}")
 
-    backend_url = f"{BACKEND_URL}/apy/{full_path.split('/')[2]}"
+    backend_url = f"{BACKEND_URL}apy/{full_path.split('/')[2]}"
     logger.info(f"Forwarding request to backend: {backend_url}")
 
     try:
