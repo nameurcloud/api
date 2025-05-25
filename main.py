@@ -14,7 +14,7 @@ from google.oauth2 import id_token
 # Logging setup
 # ----------------
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("main")
 
 app = FastAPI()
 
@@ -29,35 +29,48 @@ app.add_middleware(
     allow_headers=["Authorization", "Content-Type"],
 )
 
-
+# ----------------
+# Get ID Token for Cloud Run audience
+# ----------------
 async def get_id_token(audience: str) -> str:
-    """Get an ID token for the target audience (backend URL)."""
     logger.info(f"Fetching ID token for audience: {audience}")
     credentials, _ = default()
     auth_req = GoogleRequest()
-    token = id_token.fetch_id_token(auth_req, audience)
-    logger.info("Successfully fetched ID token.")
-    return token
+    try:
+        token = id_token.fetch_id_token(auth_req, audience)
+        logger.info(f"Successfully fetched ID token. Token prefix: {token[:10]}...")
+        return token
+    except Exception as e:
+        logger.exception("Failed to fetch ID token.")
+        raise HTTPException(status_code=500, detail=f"Token generation error: {str(e)}")
 
-
+# ----------------
+# API Route Proxy
+# ----------------
 @app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 async def proxy(full_path: str, request: Request):
     logger.info(f"Incoming request: {request.method} /{full_path}")
 
-    # Validate path
+    # ----------------
+    # Validate route
+    # ----------------
     if not (
         is_valid_view_path(full_path)
         or is_valid_generate_path(full_path)
         or is_valid_delete_path(full_path)
     ):
-        logger.warning(f"Rejected invalid path: {full_path}")
+        logger.warning(f"Invalid path attempted: {full_path}")
         raise HTTPException(status_code=400, detail="Invalid URL")
 
-    # Extract Authorization header
+    # ----------------
+    # Extract API Key
+    # ----------------
     api_key = request.headers.get("Authorization")
-    logger.debug(f"Authorization header received: {bool(api_key)}")
+    logger.debug(f"API key present: {bool(api_key)}")
 
-    # Prepare request payload
+    # ----------------
+    # Prepare payload
+    # ----------------
     if request.method == "POST":
         raw_body = await request.body()
         body_str = raw_body.decode('utf-8') if raw_body else ""
@@ -78,21 +91,30 @@ async def proxy(full_path: str, request: Request):
             "method": request.method
         }
 
+    # ----------------
+    # Prepare headers (filter host & content-length)
+    # ----------------
     headers = {
         k: v for k, v in request.headers.items()
         if k.lower() not in ("host", "content-length")
     }
 
-    # Inject Bearer token for backend
+    # ----------------
+    # Inject ID Token
+    # ----------------
     if not IS_DEV:
         try:
             token = await get_id_token(BACKEND_URL)
             headers["Authorization"] = f"Bearer {token}"
+            logger.info("ID token added to request headers.")
         except Exception as e:
-            logger.exception("Error generating ID token")
-            raise HTTPException(status_code=500, detail=f"Failed to get ID token: {str(e)}")
+            logger.exception("Failed to generate or inject ID token.")
+            raise HTTPException(status_code=500, detail=f"ID token injection failed: {str(e)}")
 
-    backend_url = f"{BACKEND_URL}apy/{full_path.split('/')[2]}"
+    # ----------------
+    # Forward to backend
+    # ----------------
+    backend_url = f"{BACKEND_URL}/apy/{full_path.split('/')[2]}"
     logger.info(f"Forwarding request to backend: {backend_url}")
 
     try:
@@ -104,9 +126,12 @@ async def proxy(full_path: str, request: Request):
             )
         logger.info(f"Backend responded with status: {backend_response.status_code}")
     except httpx.HTTPError as e:
-        logger.exception("Request to backend failed")
-        raise HTTPException(status_code=502, detail=f"Request to backend failed: {str(e)}")
+        logger.exception("Request to backend failed.")
+        raise HTTPException(status_code=502, detail=f"Backend request error: {str(e)}")
 
+    # ----------------
+    # Parse response
+    # ----------------
     try:
         content = backend_response.json()
     except Exception:
