@@ -102,7 +102,7 @@ async def proxy(full_path: str, request: Request):
     # ----------------
     # Inject ID Token
     # ----------------
-    print(IS_DEV)
+    print(not IS_DEV)
     if not IS_DEV:
         print("Here")
         try:
