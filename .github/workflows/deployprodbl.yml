@@ -65,4 +65,4 @@ jobs:
             --platform=managed \
             --region=asia-east1 \
             --port=8080 \
-            --set-env-vars "BACKEND_URL=${{ secrets.BACKEND_URL }},IS_DEV=False"
+            --set-env-vars "BACKEND_URL=${{ secrets.BACKEND_URL }}"
