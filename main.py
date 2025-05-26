@@ -116,7 +116,7 @@ async def proxy(full_path: str, request: Request):
     # ----------------
     # Forward to backend
     # ----------------
-    backend_url = f"{BACKEND_URL}apy/{full_path.split('/')[2]}"
+    backend_url = f"{BACKEND_URL}/apy/{full_path.split('/')[2]}"
     logger.info(f"Forwarding request to backend: {backend_url}")
 
     try:
