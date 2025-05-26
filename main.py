@@ -104,6 +104,7 @@ async def proxy(full_path: str, request: Request):
     # ----------------
     print(IS_DEV)
     if not IS_DEV:
+        print("Here")
         try:
             token = await get_id_token(BACKEND_URL)
             headers["Authorization"] = f"Bearer {token}"
