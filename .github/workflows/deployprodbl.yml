@@ -65,4 +65,4 @@ jobs:
             --platform=managed \
             --region=asia-east1 \
             --port=8080 \
-            --set-env-vars "BACKEND_URL=${{ secrets.BACKEND_URL }}"
+            --set-env-vars "BACKEND_URL=https://be.nameurcloud.com"
