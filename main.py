@@ -53,7 +53,7 @@ async def proxy(full_path: str, request: Request):
     # ----------------
     # Extract API Key
     # ----------------
-    api_key = request.headers.get("Authorization")
+    api_key = request.headers.get("X-App-Auth")
     logger.info(f"API key present: {bool(api_key)}")
     logger.info(f"API key present: {api_key}")
     logger.info(f"API key present: {request.headers}")
