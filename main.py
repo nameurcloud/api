@@ -107,7 +107,7 @@ async def proxy(full_path: str, request: Request):
         print("Production . Generating backend auth token")
         try:
             token = await get_id_token(BACKEND_URL)
-            headers["Authorization"] = f"Bearer {token}"
+            headers["Authorization"] = token
             logger.info(f"ID token injected. Token starts with: {token[:10]}...")
         except Exception as e:
             logger.exception("Failed to generate or inject ID token.")
