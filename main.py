@@ -50,7 +50,11 @@ async def get_id_token(audience: str) -> str:
 @app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
 async def proxy(full_path: str, request: Request):
     logger.info(f"Incoming request: {request.method} /{full_path}")
-
+    # ----------------
+    # Extract API Key
+    # ----------------
+    api_key = request.headers.get("Authorization")
+    logger.debug(f"API key present: {bool(api_key)}")
     # ----------------
     # Validate route
     # ----------------
@@ -62,11 +66,7 @@ async def proxy(full_path: str, request: Request):
         logger.warning(f"Invalid path attempted: {full_path}")
         raise HTTPException(status_code=400, detail="Invalid URL")
 
-    # ----------------
-    # Extract API Key
-    # ----------------
-    api_key = request.headers.get("Authorization")
-    logger.debug(f"API key present: {bool(api_key)}")
+    
 
     # ----------------
     # Prepare payload
