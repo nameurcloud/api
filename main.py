@@ -56,6 +56,9 @@ async def proxy(full_path: str, request: Request):
     api_key = request.headers.get("Authorization")
     logger.info(f"API key present: {bool(api_key)}")
     logger.info(f"API key present: {api_key}")
+    logger.info(f"API key present: {request.headers}")
+    logger.info(f"API key present: {request}")
+    logger.info(f"API key present: {request.headers.items}")
     # ----------------
     # Validate route
     # ----------------
