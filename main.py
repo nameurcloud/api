@@ -65,7 +65,10 @@ async def proxy(full_path: str, request: Request):
     # ----------------
     # Extract API Key
     # ----------------
-    api_key = request.headers.get("Authorization")
+    #api_key = request.headers.get("Authorization")
+    raw_auth = request.headers.get("Authorization", "")
+    api_key = raw_auth.replace("Bearer ", "").strip() if raw_auth.startswith("Bearer ") else raw_auth
+
     logger.debug(f"API key present: {bool(api_key)}")
 
     # ----------------
